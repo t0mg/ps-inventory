@@ -9,6 +9,10 @@ main {
   transition: filter .3s;
 }
 
+.buttons {
+  text-align: right;
+}
+
 dialog[open]+main {
   filter: blur(8px);
 }
