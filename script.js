@@ -35,7 +35,9 @@ window.addEventListener("load", function () {
   let selectedDeviceId;
   var hints = new Map();
   // hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-  hints.set(ZXing.DecodeHintType.ASSUME_CODE_39_CHECK_DIGIT, true);
+  // hints.set(ZXing.DecodeHintType.ASSUME_CODE_39_CHECK_DIGIT, true);
+  const formats = [ZXing.BarcodeFormat.CODE_39, ZXing.BarcodeFormat.CODE_93, ZXing.BarcodeFormat.EAN_13];
+  hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);
   const codeReader = new ZXing.BrowserMultiFormatReader(hints);
   codeReader
     .getVideoInputDevices()
