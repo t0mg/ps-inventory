@@ -85,13 +85,25 @@ window.addEventListener("load", function () {
         navigator.share({ text: sharetext });
       });
 
-      document.getElementById("reset").addEventListener("click", () => {
+      document.getElementById("resetAll").addEventListener("click", () => {
         showDialog("Supprimer toutes les information en mémoire ?").then(
           (result) => {
             if (result === true) {
               counts = new Map();
               labels = new Map();
               window.localStorage.removeItem("ps_data");
+              updateInfo();
+            }
+          }
+        );
+      });
+    
+      document.getElementById("resetCounts").addEventListener("click", () => {
+        showDialog("Supprimer les comptes et garder les codes identifiés ?").then(
+          (result) => {
+            if (result === true) {
+              counts = new Map();
+              persist();
               updateInfo();
             }
           }
@@ -104,16 +116,16 @@ window.addEventListener("load", function () {
 });
 
 function processScan(code) {
-  navigator.vibrate([100]);
+  navigator.vibrate && navigator.vibrate([100]);
   if (!labels.has(code)) {
     let label = window.prompt("Entrer le nom du produit (optionnel)");
     labels.set(code, label || code);
   }
-  let cnt = counts.has(code) ? counts.get(code) + 1 : 1;
+  let cnt = counts.get(code) || 0;
   showDialog(`${labels.get(code)} (${cnt})`, "Ajouter").then(
     (result) => {
       if (result === true) {
-        counts.set(code, cnt);
+        counts.set(code, cnt + 1);
       }
       updateInfo();
       persist();
@@ -122,12 +134,12 @@ function processScan(code) {
 }
 
 function updateInfo() {
-  info.textContent = `Scanné: ${[...counts.values()].reduce((a,c) => a + c, 0)} produits (${labels.size} codes différents)`;
+  info.textContent = `Scanné: ${[...counts.values()].reduce((a,c) => a + (c || 0), 0)} produits (${labels.size} codes différents)`;
 }
 
 function persist() {
   const obj = {};
-  for (let key of counts.keys()) {
+  for (let key of labels.keys()) {
     obj["" + key] = { label: labels.get(key), count: counts.get(key) };
   }
   console.log(obj);
