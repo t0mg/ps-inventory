@@ -34,7 +34,7 @@ window.addEventListener("load", function () {
   init();
   let selectedDeviceId;
   var hints = new Map();
-  hints.set(ZXing.DecodeHintType.TRY_HARDER, true)
+  // hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
   hints.set(ZXing.DecodeHintType.ASSUME_CODE_39_CHECK_DIGIT, true);
   const codeReader = new ZXing.BrowserMultiFormatReader(hints);
   codeReader
