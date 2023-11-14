@@ -34,7 +34,7 @@ window.addEventListener("load", function () {
   init();
   let selectedDeviceId;
   var hints = new Map();
-  // hints.set(ZXing.DecodeHintType.ASSUME_GS1, true)
+  hints.set(ZXing.DecodeHintType.TRY_HARDER, true)
   hints.set(ZXing.DecodeHintType.ASSUME_CODE_39_CHECK_DIGIT, true);
   const codeReader = new ZXing.BrowserMultiFormatReader(hints);
   codeReader
@@ -64,7 +64,6 @@ window.addEventListener("load", function () {
           "video",
           (result, err) => {
             if (result && !document.querySelector("dialog[open]")) {
-              console.log(result.getText());
               processScan(result.text);
             }
             if (err && !(err instanceof ZXing.NotFoundException)) {
@@ -79,7 +78,7 @@ window.addEventListener("load", function () {
       document.getElementById("share").addEventListener("click", () => {
         let sharetext = "";
         for (let key of counts.keys()) {
-          sharetext += `${key}, ${labels.get(key)}, ${counts.get(key)}\n`;
+          sharetext += `${key}, ${labels.get(key).replace(',',' ')}, ${counts.get(key) || 0}\n`;
         }
         navigator.share({ text: sharetext });
       });
