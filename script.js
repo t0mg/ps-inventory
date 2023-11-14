@@ -5,25 +5,25 @@ const dialog = document.querySelector("dialog");
 const dialogText = document.getElementById("dialogTxt");
 const cancelBtn = document.querySelector("dialog button#cancel");
 const confirmBtn = document.querySelector("dialog button#ok");
+const dialogInput = document.getElementById('dialogInput');
 const info = document.getElementById("info");
 
-async function showDialog(text, okBtnLabel = "OK") {
+async function showDialog(text, okBtnLabel = "OK", textInput = false) {
   dialogText.innerText = text;
   confirmBtn.innerText = okBtnLabel;
+  dialogInput.style.display = textInput ? 'initial' : 'none';
   dialog.showModal();
   return new Promise((resolve) => {
     let cancelCb, confirmCb;
     cancelCb = () => {
-      console.log("cancel");
       dialog.close();
       cancelBtn.removeEventListener("click", cancelCb);
       resolve(false);
     };
     confirmCb = () => {
-      console.log("ok");
       dialog.close();
       confirmBtn.removeEventListener("click", confirmCb);
-      resolve(true);
+      resolve(textInput ? dialogInput.value : true);
     };
     cancelBtn.addEventListener("click", cancelCb);
     confirmBtn.addEventListener("click", confirmCb);
@@ -37,7 +37,6 @@ window.addEventListener("load", function () {
   // hints.set(ZXing.DecodeHintType.ASSUME_GS1, true)
   hints.set(ZXing.DecodeHintType.ASSUME_CODE_39_CHECK_DIGIT, true);
   const codeReader = new ZXing.BrowserMultiFormatReader(hints);
-  console.log("ZXing code reader initialized");
   codeReader
     .getVideoInputDevices()
     .then((videoInputDevices) => {
@@ -115,22 +114,19 @@ window.addEventListener("load", function () {
     });
 });
 
-function processScan(code) {
+async function processScan(code) {
   navigator.vibrate && navigator.vibrate([100]);
   if (!labels.has(code)) {
-    let label = window.prompt("Entrer le nom du produit (optionnel)");
+    const label = await showDialog("Nouveau code. Entrer le nom du produit (optionnel).", undefined, true);
     labels.set(code, label || code);
   }
-  let cnt = counts.get(code) || 0;
-  showDialog(`${labels.get(code)} (${cnt})`, "Ajouter").then(
-    (result) => {
-      if (result === true) {
-        counts.set(code, cnt + 1);
-      }
-      updateInfo();
-      persist();
-    }
-  );
+  const cnt = counts.get(code) || 0;
+  const add  = await showDialog(`${labels.get(code)} (${cnt})`, "Ajouter 1");
+  if (add === true) {
+    counts.set(code, cnt + 1);
+  }
+  updateInfo();
+  persist();
 }
 
 function updateInfo() {
@@ -142,7 +138,6 @@ function persist() {
   for (let key of labels.keys()) {
     obj["" + key] = { label: labels.get(key), count: counts.get(key) };
   }
-  console.log(obj);
   window.localStorage.setItem("ps_data", JSON.stringify(obj));
 }
 
@@ -150,7 +145,6 @@ function init() {
   let data = window.localStorage.getItem("ps_data") || "{}";
   try {
     const dataObj = JSON.parse(data);
-    console.log("decoded object", dataObj);
     counts = new Map();
     labels = new Map();
     for (const code in dataObj) {
