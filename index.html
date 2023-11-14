@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>PHARMA Soldaire - outil d'inventaire</title>
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic'>
+  <link rel='stylesheet' href='https://unpkg.com/normalize.css@8.0.0/normalize.css'>
+  <link rel='stylesheet' href='https://unpkg.com/milligram@1.3.0/dist/milligram.min.css'>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<dialog>
+  <p id="dialogTxt"></p>
+  <button autofocus id="cancel">Annuler</button>
+  <button id="ok">Ok</button>
+</dialog>
+<main class="wrapper" style="padding-top:2em">
+
+  <section class="container">
+    <h2>PHARMA Solidaires</h2>
+
+    <div id="sourceSelectPanel" style="display:none">
+      <label for="sourceSelect">Caméra:</label>
+      <select id="sourceSelect"></select>
+      <button id="startButton">Démarrer</button>
+    </div>
+
+    <pre><code id="info"></code></pre>
+
+    <div>
+      <button id="share">Partager</button>
+      <button id="reset">Réintialiser</button>
+    </div>
+
+    <div>
+      <video id="video"></video>
+    </div>
+
+  </section>
+
+</main>
+<script src='https://unpkg.com/@zxing/library@latest'></script><script  src="./script.js"></script>
+
+</body>
+</html>
